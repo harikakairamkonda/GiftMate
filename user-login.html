@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GiftMate | User Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            font-family: Arial, sans-serif;
+            color: #422d38;
+            background: linear-gradient(135deg, #fff7f3, #ffe0ec);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 38px;
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid #f6dce6;
+            border-radius: 24px;
+            box-shadow: 0 18px 55px rgba(130, 48, 83, 0.13);
+        }
+
+        .brand {
+            text-align: center;
+            font-size: 19px;
+            font-weight: bold;
+            color: #bd3472;
+            text-decoration: none;
+        }
+
+        .gift-icon {
+            width: 76px;
+            height: 76px;
+            margin: 24px auto 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ffe0eb, #fff0dc);
+            border-radius: 24px;
+            font-size: 42px;
+        }
+
+        h1 {
+            margin: 12px 0;
+            text-align: center;
+            font-size: 29px;
+            color: #8e2858;
+        }
+
+        .subtitle {
+            margin-bottom: 28px;
+            text-align: center;
+            color: #806b76;
+            line-height: 1.6;
+        }
+
+        label {
+            display: block;
+            margin: 18px 0 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #e6d4dd;
+            border-radius: 11px;
+            font-size: 15px;
+            background: #fffdfd;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #c53b7c;
+            box-shadow: 0 0 0 3px #c53b7c18;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 26px;
+            padding: 15px;
+            border: none;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #d94283, #ad2869);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 18px #c53b7c30;
+        }
+
+        button:hover {
+            filter: brightness(1.05);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #message {
+            margin-top: 16px;
+            text-align: center;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .links {
+            margin-top: 22px;
+            text-align: center;
+            line-height: 2.2;
+            font-size: 14px;
+        }
+
+        a {
+            color: #bd3472;
+            font-weight: 600;
+        }
+
+        .divider {
+            margin: 20px 0;
+            border: 0;
+            border-top: 1px solid #f0e4e9;
+        }
+
+        .back-link {
+            text-decoration: none;
+            font-weight: normal;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 27px 22px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="login-card">
+
+        <div style="text-align:center">
+            <a class="brand" href="/">🎁 GiftMate</a>
+        </div>
+
+        <div class="gift-icon" aria-hidden="true">🎀</div>
+
+        <h1>User Login</h1>
+
+        <p class="subtitle">
+            Welcome back! Sign in to discover thoughtful gifts
+            for your favourite people.
+        </p>
+
+        <form id="userLoginForm">
+
+            <label for="email">Email Address</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your registered email"
+                autocomplete="email"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit" id="loginButton">
+                Sign In →
+            </button>
+
+        </form>
+
+        <p id="message" role="status" aria-live="polite"></p>
+
+        <hr class="divider">
+
+        <div class="links">
+            <div>
+                Don't have an account?
+                <a href="/register.html">Create an account</a>
+            </div>
+
+            <div>
+                Are you an administrator?
+                <a href="/admin-login.html">Admin Login</a>
+            </div>
+
+            <div>
+                <a class="back-link" href="/">← Back to Home</a>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const form = document.getElementById("userLoginForm");
+        const message = document.getElementById("message");
+        const button = document.getElementById("loginButton");
+
+        form.addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            message.textContent = "Checking your account...";
+            message.style.color = "#806b76";
+            button.disabled = true;
+
+            try {
+                const response = await fetch("/api/auth/user-login", {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: document.getElementById("email").value.trim(),
+                        password: document.getElementById("password").value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    message.textContent =
+                        data.message || "Login failed. Please try again.";
+                    message.style.color = "#c0392b";
+                    return;
+                }
+
+                message.textContent =
+                    "Login successful! Welcome, " + data.user.name + ".";
+                message.style.color = "#22863a";
+
+                setTimeout(function() {
+                    window.location.href = "/dashboard.html";
+                }, 600);
+
+            } catch (error) {
+                console.error("User login error:", error);
+
+                message.textContent =
+                    "Cannot connect to GiftMate. Please check the server.";
+                message.style.color = "#c0392b";
+            } finally {
+                button.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,780 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GiftMate - Admin Dashboard</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 25px;
+            font-family: Arial, sans-serif;
+            background: #fff5f8;
+            color: #333;
+        }
+
+        header {
+            text-align: center;
+            background: #e75480;
+            color: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+        }
+
+        header h1 { margin-top: 0; }
+
+        .section {
+            background: white;
+            padding: 22px;
+            margin: 20px auto;
+            max-width: 1100px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px #00000012;
+        }
+
+        h2 { color: #d6336c; margin-top: 0; }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: #fff0f5;
+            border: 1px solid #ffd0df;
+            padding: 20px;
+            text-align: center;
+            border-radius: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .stat-card h3 { font-size: 15px; color: #8a3152; }
+
+        .stat-card p {
+            font-size: 25px;
+            font-weight: bold;
+            color: #d6336c;
+            margin-bottom: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        .field.full { grid-column: 1 / -1; }
+
+        label { font-weight: bold; font-size: 14px; }
+
+        input, textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            font: inherit;
+        }
+
+        textarea { resize: vertical; min-height: 75px; }
+
+        input:focus, textarea:focus {
+            outline: 2px solid #f5a3bf;
+            border-color: #e75480;
+        }
+
+        button {
+            padding: 11px 16px;
+            border: none;
+            border-radius: 7px;
+            background: #e75480;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px 5px 5px 0;
+        }
+
+        button:hover { background: #c93868; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .delete-btn { background: #c0392b; }
+        .edit-btn { background: #6c63ff; }
+
+        .message {
+            margin-top: 12px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .gift-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 18px;
+        }
+
+        .gift-card {
+            border: 1px solid #f4cada;
+            padding: 18px;
+            border-radius: 12px;
+            background: #fffafd;
+            overflow-wrap: anywhere;
+        }
+
+        .gift-emoji { font-size: 36px; }
+
+        .gift-card h3 { color: #d6336c; }
+
+        .gift-photo {
+            display: block;
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            background: #fff0f5;
+        }
+
+        .muted { color: #777; font-size: 14px; }
+
+        #imagePreview {
+            display: none;
+            max-width: 240px;
+            max-height: 220px;
+            margin-top: 10px;
+            border-radius: 10px;
+            object-fit: contain;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .field.full { grid-column: auto; }
+            .section { padding: 16px; }
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>🎁 GiftMate Admin</h1>
+    <p>Manage gifts and view dashboard statistics</p>
+    <button type="button" id="logoutBtn">Logout</button>
+</header>
+
+<section class="section">
+    <h2>📊 Admin Dashboard</h2>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <h3>Total Gifts</h3>
+            <p id="totalGifts">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Categories</h3>
+            <p id="totalCategories">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Average Price</h3>
+            <p id="averagePrice">₹0.00</p>
+        </div>
+        <div class="stat-card">
+            <h3>Most Popular Category</h3>
+            <p id="popularCategory">-</p>
+        </div>
+    </div>
+
+    <p id="dashboardMessage" class="message" role="status"></p>
+    <button type="button" id="refreshDashboardBtn">Refresh Dashboard</button>
+</section>
+
+<section class="section">
+    <h2>➕ Add New Gift</h2>
+
+    <form id="giftForm">
+        <div class="form-grid">
+            <div class="field">
+                <label for="name">Gift Name *</label>
+                <input id="name" name="name" required maxlength="150">
+            </div>
+
+            <div class="field">
+                <label for="price">Price (₹) *</label>
+                <input id="price" name="price" type="number"
+                       min="0.01" step="0.01" required>
+            </div>
+
+            <div class="field">
+                <label for="category">Category *</label>
+                <input id="category" name="category"
+                       placeholder="Example: Electronics" required maxlength="100">
+            </div>
+
+            <div class="field">
+                <label for="emoji">Emoji</label>
+                <input id="emoji" name="emoji" placeholder="🎁">
+            </div>
+
+            <div class="field full">
+                <label for="description">Description</label>
+                <textarea id="description" name="description"></textarea>
+            </div>
+
+            <div class="field">
+                <label for="recipients">Recipients</label>
+                <input id="recipients" name="recipients"
+                       placeholder="Friend, Mother, Father">
+            </div>
+
+            <div class="field">
+                <label for="occasions">Occasions</label>
+                <input id="occasions" name="occasions"
+                       placeholder="Birthday, Anniversary">
+            </div>
+
+            <div class="field full">
+                <label for="interests">Interests</label>
+                <input id="interests" name="interests"
+                       placeholder="Music, Sports, Reading">
+            </div>
+
+            <div class="field full">
+                <label for="giftImage">Upload Gift Image</label>
+                <input
+                    type="file"
+                    id="giftImage"
+                    name="image"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                >
+                <small>JPG, PNG, WebP, or GIF. Maximum size: 5 MB.</small>
+                <img id="imagePreview" alt="Selected gift image preview">
+            </div>
+        </div>
+
+        <button type="submit" id="addGiftBtn">Add Gift</button>
+        <button type="button" id="clearFormBtn">Clear Form</button>
+        <p id="addMessage" class="message" role="status"></p>
+    </form>
+</section>
+
+<section class="section">
+    <h2>🎁 All Gifts</h2>
+    <button type="button" id="loadGiftsBtn">View All Gifts</button>
+    <p id="giftListMessage" class="message" role="status"></p>
+    <div id="giftList" class="gift-list"></div>
+</section>
+
+<script>
+    const API_URL = "/api/gifts";
+
+    const giftForm = document.getElementById("giftForm");
+    const giftImageInput = document.getElementById("giftImage");
+    const imagePreview = document.getElementById("imagePreview");
+    const addMessage = document.getElementById("addMessage");
+    const giftList = document.getElementById("giftList");
+    const giftListMessage = document.getElementById("giftListMessage");
+    const dashboardMessage = document.getElementById("dashboardMessage");
+    const addGiftBtn = document.getElementById("addGiftBtn");
+
+    let giftsLoaded = false;
+    let previewUrl = null;
+
+    function showMessage(element, message, isError = false) {
+        element.textContent = message;
+        element.style.color = isError ? "#c0392b" : "#22863a";
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, character => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[character]);
+    }
+
+    function splitValues(value) {
+        if (Array.isArray(value)) return value;
+        if (!value) return [];
+
+        return String(value)
+            .split(",")
+            .map(item => item.trim())
+            .filter(Boolean);
+    }
+
+    function listToText(value) {
+        if (Array.isArray(value)) return value.join(", ");
+        if (!value) return "";
+
+        if (typeof value === "string") {
+            try {
+                const parsed = JSON.parse(value);
+                if (Array.isArray(parsed)) return parsed.join(", ");
+            } catch (error) {
+                // The value is ordinary text, not JSON.
+            }
+        }
+
+        return String(value);
+    }
+
+    function clearImagePreview() {
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+            previewUrl = null;
+        }
+
+        imagePreview.removeAttribute("src");
+        imagePreview.style.display = "none";
+    }
+
+    giftImageInput.addEventListener("change", function () {
+        clearImagePreview();
+
+        const file = this.files[0];
+        if (!file) return;
+
+        const allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/gif"
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert("Please choose a JPG, PNG, WebP, or GIF image.");
+            this.value = "";
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert("The image must be 5 MB or smaller.");
+            this.value = "";
+            return;
+        }
+
+        previewUrl = URL.createObjectURL(file);
+        imagePreview.src = previewUrl;
+        imagePreview.style.display = "block";
+    });
+
+    async function getGifts() {
+        const response = await fetch(API_URL);
+        const result = await response.json();
+
+        if (!response.ok || result.success === false) {
+            throw new Error(result.message || "Unable to load gifts.");
+        }
+
+        if (!Array.isArray(result.data)) {
+            throw new Error("Unexpected gift list returned by the server.");
+        }
+
+        return result.data;
+    }
+
+    async function loadDashboard() {
+        showMessage(dashboardMessage, "Loading dashboard...");
+
+        try {
+            const gifts = await getGifts();
+
+            const categories = gifts
+                .map(gift => String(gift.category || "").trim())
+                .filter(Boolean);
+
+            const uniqueCategories = new Set(
+                categories.map(category => category.toLowerCase())
+            );
+
+            const totalPrice = gifts.reduce(
+                (sum, gift) => sum + (Number(gift.price) || 0), 0
+            );
+
+            const categoryCounts = {};
+
+            categories.forEach(category => {
+                const key = category.toLowerCase();
+
+                if (!categoryCounts[key]) {
+                    categoryCounts[key] = { name: category, count: 0 };
+                }
+
+                categoryCounts[key].count++;
+            });
+
+            let popularCategory = "-";
+            let highestCount = 0;
+
+            Object.values(categoryCounts).forEach(category => {
+                if (category.count > highestCount) {
+                    highestCount = category.count;
+                    popularCategory = category.name;
+                }
+            });
+
+            document.getElementById("totalGifts").textContent = gifts.length;
+            document.getElementById("totalCategories").textContent =
+                uniqueCategories.size;
+
+            document.getElementById("averagePrice").textContent =
+                "₹" + (gifts.length ? totalPrice / gifts.length : 0).toFixed(2);
+
+            document.getElementById("popularCategory").textContent =
+                popularCategory;
+
+            showMessage(dashboardMessage, "Dashboard updated successfully.");
+        } catch (error) {
+            showMessage(
+                dashboardMessage,
+                "Could not load dashboard: " + error.message,
+                true
+            );
+        }
+    }
+
+    // Add gift information and the image in one multipart request.
+    giftForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const name = document.getElementById("name").value.trim();
+        const price = Number(document.getElementById("price").value);
+        const category = document.getElementById("category").value.trim();
+
+        if (!name || !category || !Number.isFinite(price) || price <= 0) {
+            showMessage(
+                addMessage,
+                "Enter a gift name, category, and valid positive price.",
+                true
+            );
+            return;
+        }
+
+        const file = giftImageInput.files[0];
+
+        if (file && file.size > 5 * 1024 * 1024) {
+            showMessage(addMessage, "Image must be 5 MB or smaller.", true);
+            return;
+        }
+
+        // The input name is "image", matching upload.single("image")
+        // in server.js.
+        const formData = new FormData(giftForm);
+
+        addGiftBtn.disabled = true;
+        showMessage(addMessage, "Saving gift...");
+
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || result.success === false) {
+                throw new Error(result.message || "Could not add the gift.");
+            }
+
+            showMessage(addMessage, "Gift added successfully!");
+
+            giftForm.reset();
+            clearImagePreview();
+
+            await loadDashboard();
+
+            if (giftsLoaded) {
+                await loadGifts();
+            }
+        } catch (error) {
+            showMessage(addMessage, error.message, true);
+        } finally {
+            addGiftBtn.disabled = false;
+        }
+    });
+
+    async function loadGifts() {
+        showMessage(giftListMessage, "Loading gifts...");
+        giftList.replaceChildren();
+
+        try {
+            const gifts = await getGifts();
+            giftsLoaded = true;
+
+            if (gifts.length === 0) {
+                showMessage(giftListMessage, "No gifts found.");
+                await loadDashboard();
+                return;
+            }
+
+            showMessage(giftListMessage, "Total gifts: " + gifts.length);
+
+            gifts.forEach(gift => {
+                const card = document.createElement("div");
+                card.className = "gift-card";
+
+                const imageMarkup = gift.image_path
+                    ? `<img class="gift-photo"
+                            src="${escapeHTML(gift.image_path)}"
+                            alt="${escapeHTML(gift.name)}"
+                            loading="lazy">`
+                    : "";
+
+                card.innerHTML = `
+                    ${imageMarkup}
+                    <div class="gift-emoji">${escapeHTML(gift.emoji || "🎁")}</div>
+                    <h3>${escapeHTML(gift.name)}</h3>
+                    <p><strong>ID:</strong> ${escapeHTML(gift.id)}</p>
+                    <p><strong>Price:</strong> ₹${escapeHTML(gift.price)}</p>
+                    <p><strong>Category:</strong>
+                        ${escapeHTML(gift.category || "Uncategorized")}</p>
+                    <p><strong>Description:</strong>
+                        ${escapeHTML(gift.description || "No description")}</p>
+                    <p><strong>Recipients:</strong>
+                        ${escapeHTML(listToText(gift.recipients) || "-")}</p>
+                    <p><strong>Occasions:</strong>
+                        ${escapeHTML(listToText(gift.occasions) || "-")}</p>
+                    <p><strong>Interests:</strong>
+                        ${escapeHTML(listToText(gift.interests) || "-")}</p>
+                    <button type="button" class="edit-btn">Edit Gift</button>
+                    <button type="button" class="delete-btn">Delete Gift</button>
+                `;
+
+                const photo = card.querySelector(".gift-photo");
+
+                if (photo) {
+                    photo.addEventListener("error", () => {
+                        photo.alt = "Gift image could not be loaded";
+                        photo.style.display = "none";
+                    });
+                }
+
+                card.querySelector(".edit-btn").addEventListener(
+                    "click", () => editGift(gift)
+                );
+
+                card.querySelector(".delete-btn").addEventListener(
+                    "click", () => deleteGift(gift)
+                );
+
+                giftList.appendChild(card);
+            });
+
+            await loadDashboard();
+        } catch (error) {
+            showMessage(
+                giftListMessage,
+                "Could not load gifts: " + error.message,
+                true
+            );
+        }
+    }
+
+    async function editGift(gift) {
+        const name = prompt("Enter gift name:", gift.name || "");
+        if (name === null) return;
+
+        const priceText = prompt("Enter price:", gift.price ?? "");
+        if (priceText === null) return;
+
+        const price = Number(priceText);
+
+        if (!name.trim() || !Number.isFinite(price) || price <= 0) {
+            alert("Enter a valid gift name and positive price.");
+            return;
+        }
+
+        const category = prompt("Enter category:", gift.category || "");
+        if (category === null) return;
+
+        const emoji = prompt("Enter emoji:", gift.emoji || "🎁");
+        if (emoji === null) return;
+
+        const description = prompt(
+            "Enter description:", gift.description || ""
+        );
+        if (description === null) return;
+
+        const recipients = prompt(
+            "Enter recipients separated by commas:",
+            listToText(gift.recipients)
+        );
+        if (recipients === null) return;
+
+        const occasions = prompt(
+            "Enter occasions separated by commas:",
+            listToText(gift.occasions)
+        );
+        if (occasions === null) return;
+
+        const interests = prompt(
+            "Enter interests separated by commas:",
+            listToText(gift.interests)
+        );
+        if (interests === null) return;
+
+        const replaceImage = confirm(
+            "Do you want to choose a new image for this gift?\n\n" +
+            "Choose OK to select an image, or Cancel to keep the current image."
+        );
+
+        let newImage = null;
+
+        if (replaceImage) {
+            newImage = await chooseReplacementImage();
+
+            // A cancelled file picker means keep the current image.
+            if (newImage === undefined) return;
+        }
+
+        const formData = new FormData();
+
+        formData.append("name", name.trim());
+        formData.append("price", String(price));
+        formData.append("category", category.trim());
+        formData.append("emoji", emoji.trim() || "🎁");
+        formData.append("description", description.trim());
+        formData.append("recipients", recipients);
+        formData.append("occasions", occasions);
+        formData.append("interests", interests);
+
+        if (newImage) {
+            formData.append("image", newImage);
+        }
+
+        try {
+            const response = await fetch(
+                `${API_URL}/${encodeURIComponent(gift.id)}`,
+                {
+                    method: "PUT",
+                    body: formData
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok || result.success === false) {
+                throw new Error(result.message || "Could not update gift.");
+            }
+
+            alert("Gift updated successfully!");
+            await loadGifts();
+            await loadDashboard();
+        } catch (error) {
+            alert("Error updating gift: " + error.message);
+        }
+    }
+
+    // Opens a file picker for replacing a gift's image.
+    // Returns undefined when the user cancels the picker.
+    function chooseReplacementImage() {
+        return new Promise(resolve => {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "image/jpeg,image/png,image/webp,image/gif";
+
+            input.addEventListener("change", function () {
+                const file = input.files[0];
+
+                if (!file) {
+                    resolve(undefined);
+                    return;
+                }
+
+                const allowedTypes = [
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp",
+                    "image/gif"
+                ];
+
+                if (!allowedTypes.includes(file.type)) {
+                    alert("Choose a JPG, PNG, WebP, or GIF image.");
+                    resolve(undefined);
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    alert("Image must be 5 MB or smaller.");
+                    resolve(undefined);
+                    return;
+                }
+
+                resolve(file);
+            }, { once: true });
+
+            // Handle cancelling the file picker in browsers that support it.
+            input.addEventListener("cancel", () => resolve(undefined), {
+                once: true
+            });
+
+            input.click();
+        });
+    }
+
+    async function deleteGift(gift) {
+        if (!confirm(`Are you sure you want to delete "${gift.name}"?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${API_URL}/${encodeURIComponent(gift.id)}`,
+                { method: "DELETE" }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok || result.success === false) {
+                throw new Error(result.message || "Could not delete gift.");
+            }
+
+            alert("Gift deleted successfully!");
+            await loadGifts();
+            await loadDashboard();
+        } catch (error) {
+            alert("Error deleting gift: " + error.message);
+        }
+    }
+
+    document.getElementById("clearFormBtn").addEventListener("click", () => {
+        giftForm.reset();
+        clearImagePreview();
+        showMessage(addMessage, "");
+    });
+
+    document.getElementById("loadGiftsBtn").addEventListener(
+        "click", loadGifts
+    );
+
+    document.getElementById("refreshDashboardBtn").addEventListener(
+        "click", loadDashboard
+    );
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+        try {
+            const response = await fetch("/api/auth/logout", {
+                method: "POST"
+            });
+
+            if (response.ok) {
+                window.location.href = "/admin-login.html";
+            } else {
+                alert("Logout failed. Please try again.");
+            }
+        } catch (error) {
+            alert("Could not connect to the server.");
+        }
+    });
+
+    loadDashboard();
+</script>
+</body>
+</html>

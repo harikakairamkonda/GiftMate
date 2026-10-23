@@ -1,0 +1,419 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GiftMate | Thoughtful Gifting Made Easy</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fffaf7;
+            color: #392936;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 7%;
+            background: #ffffff;
+            box-shadow: 0 3px 18px rgba(70, 30, 50, 0.07);
+        }
+
+        .logo {
+            color: #bd3472;
+            font-size: 27px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link {
+            padding: 11px 20px;
+            color: #a72e65;
+            border: 1px solid #e8bfd1;
+            border-radius: 10px;
+        }
+
+        .register-link {
+            padding: 12px 21px;
+            color: white;
+            background: #bd3472;
+            border-radius: 10px;
+        }
+
+        .hero {
+            min-height: 610px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 45px;
+            max-width: 1250px;
+            margin: auto;
+            padding: 65px 6%;
+        }
+
+        .hero-content {
+            max-width: 560px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            color: #a72e65;
+            background: #ffe8f0;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1.2px;
+        }
+
+        h1 {
+            margin-bottom: 22px;
+            color: #702449;
+            font-size: clamp(38px, 5vw, 62px);
+            line-height: 1.13;
+        }
+
+        .highlight {
+            color: #d23e82;
+        }
+
+        .hero-description {
+            margin-bottom: 30px;
+            color: #756270;
+            font-size: 17px;
+            line-height: 1.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .primary-button,
+        .secondary-button {
+            display: inline-block;
+            padding: 15px 24px;
+            border-radius: 11px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .primary-button {
+            color: white;
+            background: linear-gradient(135deg, #d94283, #ad2869);
+            box-shadow: 0 8px 20px rgba(189, 52, 114, 0.2);
+        }
+
+        .secondary-button {
+            color: #a72e65;
+            background: white;
+            border: 1px solid #e8bfd1;
+        }
+
+        .primary-button:hover,
+        .secondary-button:hover {
+            transform: translateY(-3px);
+        }
+
+        .hero-image-container {
+            position: relative;
+            padding: 15px;
+            background: linear-gradient(145deg, #ffe0eb, #ffeedc);
+            border-radius: 35px;
+            box-shadow: 0 20px 55px rgba(110, 42, 76, 0.13);
+        }
+
+        .hero-image {
+            display: block;
+            width: 100%;
+            height: 440px;
+            object-fit: cover;
+            border-radius: 25px;
+            background: #ffe8ef;
+        }
+
+        .image-caption {
+            position: absolute;
+            right: -12px;
+            bottom: 35px;
+            max-width: 230px;
+            padding: 17px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(60, 30, 45, 0.13);
+            color: #702449;
+            line-height: 1.6;
+            font-weight: bold;
+        }
+
+        .features {
+            padding: 65px 7%;
+            background: #ffffff;
+            text-align: center;
+        }
+
+        .features h2 {
+            margin-bottom: 12px;
+            color: #702449;
+            font-size: 32px;
+        }
+
+        .features-intro {
+            margin-bottom: 35px;
+            color: #756270;
+            line-height: 1.7;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .feature-card {
+            padding: 28px 22px;
+            background: #fff8fb;
+            border: 1px solid #f4e2ea;
+            border-radius: 18px;
+        }
+
+        .feature-icon {
+            margin-bottom: 15px;
+            font-size: 35px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 10px;
+            color: #8e2858;
+        }
+
+        .feature-card p {
+            color: #756270;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .cta {
+            padding: 65px 7%;
+            background: linear-gradient(120deg, #ffe5ee, #fff0df);
+            text-align: center;
+        }
+
+        .cta h2 {
+            margin-bottom: 15px;
+            color: #702449;
+            font-size: 32px;
+        }
+
+        .cta p {
+            margin-bottom: 25px;
+            color: #756270;
+            line-height: 1.8;
+        }
+
+        footer {
+            padding: 25px;
+            background: #ffffff;
+            color: #756270;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 800px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding-top: 45px;
+            }
+
+            .hero-content {
+                max-width: 100%;
+            }
+
+            .hero-image {
+                height: 350px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .hero {
+                gap: 30px;
+            }
+
+            .hero-image {
+                height: 280px;
+            }
+
+            .image-caption {
+                right: 8px;
+                bottom: 25px;
+                max-width: 200px;
+            }
+
+            .primary-button,
+            .secondary-button {
+                padding: 13px 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="/" class="logo">🎁 GiftMate</a>
+
+        <nav class="nav-links">
+            <a href="/user-login.html" class="login-link">Login</a>
+            <a href="/register.html" class="register-link">Register</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+
+            <div class="hero-content">
+                <span class="eyebrow">🎀 MAKE EVERY MOMENT SPECIAL</span>
+
+                <h1>
+                    The perfect gift is
+                    <span class="highlight">closer than you think.</span>
+                </h1>
+
+                <p class="hero-description">
+                    Finding a meaningful gift doesn't have to be difficult.
+                    GiftMate helps you discover thoughtful gift ideas based
+                    on the person, occasion, interests, and your budget.
+                    Make every celebration a little more memorable.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="/user-login.html" class="primary-button">
+                        Find Your Perfect Gift →
+                    </a>
+
+                    <a href="/register.html" class="secondary-button">
+                        Create Account
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-image-container">
+                <img
+                    class="hero-image"
+                    src="https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=1000&q=85"
+                    alt="Beautifully wrapped gifts with ribbons"
+                    onerror="this.style.display='none'; this.parentElement.style.minHeight='300px';"
+                >
+
+                <div class="image-caption">
+                    💝 Thoughtful gifts.
+                    <br>
+                    Unforgettable moments.
+                </div>
+            </div>
+
+        </section>
+
+        <section class="features">
+            <h2>Why Choose GiftMate?</h2>
+
+            <p class="features-intro">
+                A simpler way to find gifts that make people smile.
+            </p>
+
+            <div class="feature-grid">
+
+                <article class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Personalized Ideas</h3>
+                    <p>
+                        Discover gift suggestions that match the recipient,
+                        their interests, and the special occasion.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Budget Friendly</h3>
+                    <p>
+                        Explore gift options according to your budget
+                        without making gift shopping complicated.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">💖</div>
+                    <h3>Made for Every Occasion</h3>
+                    <p>
+                        Find inspiration for birthdays, anniversaries,
+                        festivals, graduations, and everyday surprises.
+                    </p>
+                </article>
+
+            </div>
+        </section>
+
+        <section class="cta">
+            <h2>Ready to make someone smile?</h2>
+
+            <p>
+                Create your account and start exploring thoughtful
+                gift recommendations with GiftMate.
+            </p>
+
+            <a href="/register.html" class="primary-button">
+                Get Started for Free →
+            </a>
+        </section>
+    </main>
+
+    <footer>
+        <strong>🎁 GiftMate</strong>
+        <p>Thoughtful gifting, made simple.</p>
+        <p>© <span id="currentYear"></span> GiftMate. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById("currentYear").textContent =
+            new Date().getFullYear();
+    </script>
+
+</body>
+</html>

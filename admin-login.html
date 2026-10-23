@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GiftMate - Admin Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #fce7f3, #e9d5ff);
+        }
+
+        .login-box {
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            text-align: center;
+            color: #7e22ce;
+            margin-bottom: 8px;
+        }
+
+        p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 7px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 12px;
+            border: none;
+            border-radius: 7px;
+            background: #7e22ce;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #6b21a8;
+        }
+
+        #message {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #7e22ce;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-box">
+        <h1>🎁 GiftMate</h1>
+        <p>Admin Login</p>
+
+        <form id="adminLoginForm">
+            <label for="username">Admin Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter admin username"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter admin password"
+                required
+            >
+
+            <button type="submit" id="loginButton">Login</button>
+            <div id="message" role="status"></div>
+        </form>
+
+        <a href="/index.html" class="back-link">Back to Home</a>
+    </div>
+
+    <script>
+        const form = document.getElementById("adminLoginForm");
+        const message = document.getElementById("message");
+        const button = document.getElementById("loginButton");
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            message.textContent = "";
+            button.disabled = true;
+            button.textContent = "Logging in...";
+
+            try {
+                const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: document.getElementById("username").value,
+                        password: document.getElementById("password").value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    message.style.color = "green";
+                    message.textContent = "Login successful!";
+
+                    window.location.href = "/admin.html";
+                } else {
+                    message.style.color = "red";
+                    message.textContent =
+                        data.message || "Invalid username or password.";
+                }
+            } catch (error) {
+                message.style.color = "red";
+                message.textContent =
+                    "Unable to connect to the server. Please try again.";
+            } finally {
+                button.disabled = false;
+                button.textContent = "Login";
+            }
+        });
+    </script>
+</body>
+</html>

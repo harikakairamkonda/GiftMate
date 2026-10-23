@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GiftMate Admin Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #fff0f5, #ffd6e5);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            padding: 32px;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px #9e31551f;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 48px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #d6336c;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 18px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: 2px solid #f3a0bc;
+            border-color: #d6336c;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            background: #e75480;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #c93868;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #message {
+            min-height: 22px;
+            margin-top: 16px;
+            text-align: center;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .home-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #d6336c;
+            text-decoration: none;
+        }
+
+        .home-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="login-card">
+        <div class="logo">🎁</div>
+
+        <h1>GiftMate Admin</h1>
+
+        <p class="subtitle">
+            Sign in to manage your gifts
+        </p>
+
+        <form id="loginForm">
+            <label for="username">Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter admin username"
+                autocomplete="username"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter admin password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit" id="loginButton">
+                Login
+            </button>
+
+            <p id="message" role="status" aria-live="polite"></p>
+        </form>
+
+        <a href="/" class="home-link">← Back to GiftMate Home</a>
+    </main>
+
+    <script>
+        const loginForm = document.getElementById("loginForm");
+        const message = document.getElementById("message");
+        const loginButton = document.getElementById("loginButton");
+
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch("/api/auth/status", {
+                    credentials: "same-origin"
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.isAdmin) {
+                    window.location.replace("/admin.html");
+                }
+            } catch (error) {
+                // The user can still submit the login form.
+            }
+        }
+
+        loginForm.addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            message.textContent = "Checking credentials...";
+            message.style.color = "#555";
+            loginButton.disabled = true;
+
+            const username =
+                document.getElementById("username").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+            try {
+                const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    message.textContent =
+                        result.message || "Login failed.";
+
+                    message.style.color = "#c0392b";
+                    return;
+                }
+
+                message.textContent = "Login successful!";
+                message.style.color = "#22863a";
+
+                window.location.replace("/admin.html");
+            } catch (error) {
+                message.textContent =
+                    "Cannot connect to GiftMate server. Check that it is running.";
+
+                message.style.color = "#c0392b";
+            } finally {
+                loginButton.disabled = false;
+            }
+        });
+
+        checkLoginStatus();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,545 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GiftMate | Gift Finder</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js" defer></script>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: #fff9f6;
+            color: #392936;
+            font-family: Arial, sans-serif;
+        }
+
+        .dashboard-nav {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 5%;
+            background: white;
+            box-shadow: 0 3px 18px #44203410;
+        }
+
+        .brand {
+            color: #bd3472;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 23px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            padding: 10px 14px;
+            border: 1px solid #ead6e0;
+            border-radius: 10px;
+            background: white;
+            color: #8e2858;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .logout-button {
+            background: #bd3472;
+            color: white;
+            border-color: #bd3472;
+        }
+
+        .welcome {
+            padding: 45px 5%;
+            background: linear-gradient(120deg, #ffe5ee, #fff0df);
+        }
+
+        .welcome-inner {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .eyebrow {
+            color: #b72e6d;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .welcome h1 {
+            margin: 12px 0;
+            font-size: clamp(30px, 5vw, 46px);
+            color: #76244c;
+        }
+
+        .welcome p {
+            max-width: 650px;
+            color: #6f5865;
+            line-height: 1.8;
+        }
+
+        .content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 35px 5%;
+        }
+
+        .panel {
+            padding: 26px;
+            background: white;
+            border: 1px solid #f1e0e7;
+            border-radius: 20px;
+            box-shadow: 0 8px 28px #50283a09;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            color: #8e2858;
+        }
+
+        .gift-form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #e6d4dd;
+            border-radius: 10px;
+            background: #fffdfd;
+            font-size: 15px;
+        }
+
+        .primary-button {
+            grid-column: 1 / -1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #d94283, #ad2869);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+
+        .toolbar input,
+        .toolbar select {
+            min-width: 170px;
+            padding: 12px;
+            border: 1px solid #e6d4dd;
+            border-radius: 10px;
+            background: white;
+            font-size: 14px;
+        }
+
+        .toolbar input {
+            flex: 1;
+        }
+
+        .gift-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .gift-card {
+            overflow: hidden;
+            background: white;
+            border: 1px solid #f0dfe7;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px #51283c0c;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .gift-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 32px #51283c1b;
+        }
+
+        .gift-art {
+            height: 215px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffe9f0, #fff0dc);
+        }
+
+        .gift-image {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .gift-art-fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gift-emoji {
+            font-size: 65px;
+        }
+
+        .gift-info {
+            padding: 18px;
+        }
+
+        .category-tag {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            background: #fff0f5;
+            color: #a52b63;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .gift-info h3 {
+            margin: 12px 0 8px;
+            color: #492e40;
+        }
+
+        .gift-info p {
+            min-height: 44px;
+            color: #786875;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .gift-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .gift-price {
+            color: #a52b63;
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .favorite-button {
+            width: 42px;
+            height: 42px;
+            border: 1px solid #f0c9da;
+            border-radius: 50%;
+            background: #fff7fa;
+            color: #b83270;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .favorite-button.active {
+            background: #ffe0eb;
+        }
+
+        #resultsMessage,
+        #accountMessage {
+            color: #786875;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            padding: 30px;
+            text-align: center;
+            color: #786875;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 25px;
+            background: #fff0f5;
+            text-align: center;
+            color: #786875;
+        }
+
+        @media (max-width: 800px) {
+            .gift-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 560px) {
+            .dashboard-nav {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .nav-actions {
+                justify-content: flex-start;
+            }
+
+            .gift-form,
+            .gift-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .panel {
+                padding: 18px;
+            }
+
+            .gift-art {
+                height: 240px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="dashboard-nav">
+        <a class="brand" href="/">🎁 GiftMate</a>
+
+        <div class="nav-actions">
+            <span id="userGreeting">Welcome!</span>
+
+            <button
+                type="button"
+                class="nav-button"
+                id="favoritesButton"
+            >
+                ♥ Favourites (<span id="favoriteCount">0</span>)
+            </button>
+
+            <button
+                type="button"
+                class="nav-button logout-button"
+                id="logoutButton"
+            >
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <section class="welcome">
+        <div class="welcome-inner">
+            <span class="eyebrow">YOUR PERSONAL GIFT ASSISTANT</span>
+            <h1>Make someone feel special. 💝</h1>
+            <p>
+                Tell us who you are shopping for, what the occasion is,
+                and your budget. GiftMate will suggest thoughtful gifts
+                that suit your preferences.
+            </p>
+        </div>
+    </section>
+
+    <main class="content">
+
+        <section class="panel">
+            <h2>Find Your Perfect Gift</h2>
+            <p>Choose your preferences below to discover suitable gifts.</p>
+
+            <form id="giftForm" class="gift-form">
+
+                <div class="form-group">
+                    <label for="recipient">Who is the gift for?</label>
+                    <select id="recipient" name="recipient" required>
+                        <option value="any">Anyone</option>
+                        <option value="friend">Friend</option>
+                        <option value="mother">Mother</option>
+                        <option value="father">Father</option>
+                        <option value="partner">Partner</option>
+                        <option value="sibling">Brother / Sister</option>
+                        <option value="colleague">Colleague</option>
+                        <option value="child">Child</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="occasion">What's the occasion?</label>
+                    <select id="occasion" name="occasion" required>
+                        <option value="any">Any occasion</option>
+                        <option value="birthday">Birthday</option>
+                        <option value="anniversary">Anniversary</option>
+                        <option value="festival">Festival</option>
+                        <option value="graduation">Graduation</option>
+                        <option value="thank-you">Thank you</option>
+                        <option value="just-because">Just because</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="budget">Your budget</label>
+                    <select id="budget" name="budget" required>
+                        <option value="500">Under ₹500</option>
+                        <option value="1000">Under ₹1,000</option>
+                        <option value="2000">Under ₹2,000</option>
+                        <option value="5000">Under ₹5,000</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="interest">What do they love?</label>
+                    <select id="interest" name="interest" required>
+                        <option value="any">Anything thoughtful</option>
+                        <option value="fashion">Fashion & accessories</option>
+                        <option value="technology">Technology</option>
+                        <option value="books">Books & learning</option>
+                        <option value="food">Food & treats</option>
+                        <option value="personalized">Personalized gifts</option>
+                        <option value="home">Home & lifestyle</option>
+                        <option value="experience">Experiences</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="primary-button">
+                    ✨ Find Gift Ideas
+                </button>
+            </form>
+        </section>
+
+        <section id="results" style="margin-top: 38px;">
+            <h2 id="resultsTitle">Popular Gift Ideas</h2>
+            <p id="resultsMessage">Explore our gift collection.</p>
+
+            <div class="toolbar">
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="🔎 Search gifts..."
+                    aria-label="Search gifts"
+                >
+
+                <select id="categoryFilter" aria-label="Filter by category">
+                    <option value="all">All categories</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Books">Books</option>
+                    <option value="Food">Food</option>
+                    <option value="Personalized">Personalized</option>
+                    <option value="Home">Home & Lifestyle</option>
+                    <option value="Experience">Experiences</option>
+                    <option value="Toys">Toys</option>
+                </select>
+
+                <button type="button" class="nav-button" id="showAllButton">
+                    Show All Gifts
+                </button>
+
+                <button type="button" class="nav-button" id="resetButton">
+                    Reset Filters
+                </button>
+            </div>
+
+            <div id="giftGrid" class="gift-grid"></div>
+
+            <div id="emptyState" class="empty-state" hidden>
+                <h3>No matching gifts found 🔎</h3>
+                <p>Try a different search or category.</p>
+                <button type="button" class="nav-button" id="resetButtonAlt">
+                    Show All Gifts
+                </button>
+            </div>
+        </section>
+
+        <p id="accountMessage" role="status" aria-live="polite"></p>
+    </main>
+
+    <footer>
+        <strong>🎁 GiftMate</strong>
+        <p>Thoughtful gifting, made simple.</p>
+        <p>© <span id="currentYear"></span> GiftMate</p>
+    </footer>
+
+    <script>
+        // Protect the dashboard from users who are not logged in.
+        async function protectDashboard() {
+            try {
+                const response = await fetch("/api/auth/user-status", {
+                    credentials: "same-origin"
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.isLoggedIn || !data.user) {
+                    window.location.replace("/user-login.html");
+                    return;
+                }
+
+                document.getElementById("userGreeting").textContent =
+                    "Hi, " + data.user.name + "!";
+            } catch (error) {
+                console.error("Session verification failed:", error);
+                window.location.replace("/user-login.html");
+            }
+        }
+
+        // Show all gifts again from the empty-results panel.
+        document.getElementById("resetButtonAlt")
+            .addEventListener("click", function () {
+                document.getElementById("showAllButton").click();
+            });
+
+        // Display logout messages if an error occurs.
+        const accountMessage = document.getElementById("accountMessage");
+
+        document.getElementById("logoutButton")
+            .addEventListener("click", async function () {
+                const button = this;
+                button.disabled = true;
+                accountMessage.textContent = "Logging out...";
+
+                try {
+                    const response = await fetch("/api/auth/user-logout", {
+                        method: "POST",
+                        credentials: "same-origin"
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success) {
+                        accountMessage.textContent =
+                            data.message || "Logout failed. Please try again.";
+                        return;
+                    }
+
+                    window.location.replace("/");
+                } catch (error) {
+                    console.error("Logout failed:", error);
+                    accountMessage.textContent =
+                        "Unable to contact the server. Please try again.";
+                } finally {
+                    button.disabled = false;
+                }
+            });
+
+        protectDashboard();
+    </script>
+
+</body>
+</html>

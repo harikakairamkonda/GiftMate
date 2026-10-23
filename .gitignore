@@ -1,0 +1,6 @@
+
+.env
+node_modules/
+giftmate.db
+giftmate.db-shm
+giftmate.db-wal
